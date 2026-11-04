@@ -188,18 +188,18 @@ function chunk(arr, n) {
   return out;
 }
 
-function pageHead(kind, total, pageNo, pageCount) {
+function pageHead(kind, total) {
   const info = kind === 'test'
     ? `<span>이름 <span class="blank"></span></span><span>점수 <span class="blank"></span> / ${total}</span>`
-    : `<span class="range">${esc(rangeText())} · ${total}문항</span>`;
+    : '';
   return `
     <div class="page-head">
       <div class="title-row">
-        <h3><span class="bloom">BLOOM</span>ing Camp VOCA Test</h3>
+        <h3>셀프 체크 <span class="range">${esc(rangeText())}</span></h3>
         <span class="tag">${kind === 'test' ? '시험지' : '답안지'}</span>
       </div>
       <div class="info-row">
-        ${kind === 'test' ? `<span class="range">${esc(rangeText())} · ${total}문항</span>` : ''}
+        <span>${total}문항</span>
         ${info}
       </div>
     </div>`;
@@ -217,7 +217,7 @@ function buildPages(words, kind) {
         : `<div class="ans-item"><span class="n">${n}.</span><span class="en">${esc(w[1])}</span><span class="ko">${esc(w[2])}</span></div>`
     ).join('')}</div>`).join('');
     return `<div class="page">
-      ${pageHead(kind, words.length, p + 1, pages.length)}
+      ${pageHead(kind, words.length)}
       <div class="page-cols">${colHtml}</div>
       <div class="page-foot">${kind === 'test' ? '시험지' : '답안지'} ${p + 1} / ${pages.length}</div>
     </div>`;
@@ -232,8 +232,56 @@ function makeSheet() {
 
 $('makeSheet').addEventListener('click', makeSheet);
 $('reshuffle').addEventListener('click', makeSheet);
-$('printBtn').addEventListener('click', () => window.print());
 $('sheetBack').addEventListener('click', () => show('home'));
+
+/* ---------- 인쇄 / PDF 저장 ----------
+   카카오톡, 네이버 앱 등 앱 안의 브라우저는 인쇄 기능이 없어서
+   크롬이나 사파리 같은 일반 브라우저로 열어 준다. */
+const UA = navigator.userAgent;
+const IN_APP = {
+  kakao: /KAKAOTALK/i.test(UA),
+  line: /\bLine\//i.test(UA),
+  other: /NAVER\(inapp|DaumApps|Instagram|FBAN|FBAV|everytimeApp|BAND\//i.test(UA),
+};
+
+// 지금 고른 범위와 개수를 주소에 담아서, 새 브라우저에서 바로 시험지가 열리게 한다
+function sheetUrl() {
+  const [a, b] = range();
+  const u = new URL(location.href);
+  u.hash = '';
+  u.search = `?sheet=1&from=${a}&to=${b}&n=${wantedCount()}`;
+  return u.toString();
+}
+
+$('printBtn').addEventListener('click', () => {
+  if (IN_APP.kakao) {
+    alert('카카오톡 안에서는 인쇄가 안 돼서 다른 브라우저로 열게요.\n열린 화면에서 다시 “인쇄 / PDF 저장”을 눌러 주세요.');
+    location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(sheetUrl());
+    return;
+  }
+  if (IN_APP.line) {
+    location.href = sheetUrl() + '&openExternalBrowser=1';
+    return;
+  }
+  if (IN_APP.other || typeof window.print !== 'function') {
+    alert('이 앱 안에서는 인쇄가 안 돼요.\n화면 오른쪽 위(또는 아래)의 ⋮ / ··· 메뉴에서 “다른 브라우저로 열기”를 누른 뒤 다시 시도해 주세요.');
+    return;
+  }
+  window.print();
+});
 
 fillDays();
 updateCount();
+
+// 주소에 시험지 정보가 있으면 (다른 브라우저로 넘어온 경우) 바로 시험지를 연다
+(function openSheetFromUrl() {
+  const q = new URLSearchParams(location.search);
+  if (!q.get('sheet')) return;
+  const a = +q.get('from'), b = +q.get('to'), n = +q.get('n');
+  if (DAYS.includes(a)) $('dayFrom').value = a;
+  if (DAYS.includes(b)) $('dayTo').value = b;
+  if (n > 0) $('count').value = n;
+  updateCount();
+  makeSheet();
+  history.replaceState(null, '', location.pathname);
+})();

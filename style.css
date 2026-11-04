@@ -26,8 +26,6 @@ body {
 
 .hero { text-align: center; padding: 24px 0 8px; }
 .logo { width: 64px; height: 64px; display: block; margin: 0 auto; }
-.title-flower { display: flex; align-items: center; justify-content: center; gap: 6px; }
-.title-flower img { width: 24px; height: 24px; }
 .hero h1 { margin: 4px 0 0; font-size: 34px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px; }
 .bloom { color: var(--point); }
 .hero h1 .bloom { color: var(--point); }
@@ -187,11 +185,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 .page-head .title-row { display: flex; justify-content: space-between; align-items: baseline; }
 .page-head h3 { margin: 0; font-size: 18pt; font-weight: 800; color: var(--dark); }
-.page-head h3 .bloom { color: var(--point); }
+.page-head h3 .range { color: var(--sub); margin-left: 6px; }
 .hero h1 .bloom { color: var(--point); }
 .page-head .tag { font-size: 10pt; font-weight: 700; background: var(--bg-mid); color: var(--accent); padding: 2px 10px; border-radius: 4px; }
 .page-head .info-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10.5pt; }
-.page-head .info-row .range { color: var(--accent); font-weight: 700; }
 .page-head .blank { display: inline-block; min-width: 32mm; border-bottom: 1px solid #000; }
 .page-cols { flex: 1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 8mm; }
 .col { display: flex; flex-direction: column; }
