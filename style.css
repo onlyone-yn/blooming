@@ -25,7 +25,9 @@ body {
 .muted { color: var(--muted); font-weight: 500; font-size: 14px; }
 
 .hero { text-align: center; padding: 24px 0 8px; }
-.logo { font-size: 44px; }
+.logo { width: 64px; height: 64px; display: block; margin: 0 auto; }
+.title-flower { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.title-flower img { width: 24px; height: 24px; }
 .hero h1 { margin: 4px 0 0; font-size: 34px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px; }
 .bloom { color: var(--point); }
 .hero h1 .bloom { color: var(--point); }
