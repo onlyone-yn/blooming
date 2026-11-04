@@ -20,7 +20,7 @@
 <section id="home" class="screen">
   <header class="hero">
     <div class="logo">🌼</div>
-    <h1><span class="bloom">BLOOM</span>ing Camp</h1>
+    <h1>BLOOM<span class="bloom">ing Camp</span></h1>
     <p class="sub-title">단어 테스트</p>
     <p class="desc">범위를 고르고 카드 테스트를 하거나 시험지를 만들어 보세요.</p>
   </header>
@@ -36,12 +36,16 @@
 
     <h2><span class="step">02</span> 문제 개수</h2>
     <div class="row">
-      <input id="count" type="number" min="1" value="20" inputmode="numeric">
-      <span>개</span>
-      <button class="chip" data-n="20">20</button>
-      <button class="chip" data-n="50">50</button>
-      <button class="chip" data-n="100">100</button>
-      <button class="chip" id="allBtn">전체</button>
+      <div class="stepper">
+        <button class="step-btn" data-d="-10">−10</button>
+        <input id="count" type="number" min="1" value="20" inputmode="numeric">
+        <button class="step-btn" data-d="10">+10</button>
+      </div>
+      <div class="presets">
+        <button class="chip" data-n="50">50</button>
+        <button class="chip" data-n="100">100</button>
+        <button class="chip" id="allBtn">전체</button>
+      </div>
     </div>
     <p class="hint warn" id="countWarn"></p>
   </div>
@@ -72,18 +76,17 @@
     <button class="btn mark save" data-mark="save">⭐ 헷갈려요</button>
     <button class="btn mark bad" data-mark="bad">❌ 틀렸어요</button>
   </div>
-  <p class="hint center key-hint">키보드: Space 정답 보기 · 1 맞음 · 2 헷갈림 · 3 틀림</p>
 </section>
 
 <!-- 3. 결과 -->
 <section id="result" class="screen hidden">
   <div class="card center">
     <h2>테스트 결과 🌼</h2>
-    <div id="scoreBig" class="score"></div>
+    <p class="hint" id="totalText"></p>
     <div class="tally">
-      <span class="t good">⭕ 맞음 <b id="cntGood"></b></span>
-      <span class="t save">⭐ 헷갈림 <b id="cntSave"></b></span>
-      <span class="t bad">❌ 틀림 <b id="cntBad"></b></span>
+      <div class="t good"><span>⭕ 맞음</span><b id="cntGood"></b></div>
+      <div class="t save"><span>⭐ 헷갈림</span><b id="cntSave"></b></div>
+      <div class="t bad"><span>❌ 틀림</span><b id="cntBad"></b></div>
     </div>
     <p id="perfectMsg" class="hint hidden">모두 맞혔어요! 🎉</p>
   </div>

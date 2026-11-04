@@ -66,6 +66,14 @@ $('count').addEventListener('input', updateCount);
 document.querySelectorAll('.chip[data-n]').forEach((b) =>
   b.addEventListener('click', () => { $('count').value = b.dataset.n; updateCount(); })
 );
+document.querySelectorAll('.step-btn').forEach((b) =>
+  b.addEventListener('click', () => {
+    const n = pool().length;
+    const c = (Math.floor(+$('count').value) || 0) + +b.dataset.d;
+    $('count').value = Math.max(1, Math.min(c, n));
+    updateCount();
+  })
+);
 $('allBtn').addEventListener('click', () => { $('count').value = pool().length; updateCount(); });
 
 /* ---------- 카드 테스트 ---------- */
@@ -136,8 +144,7 @@ function showResult() {
   const total = quiz.marks.length;
   const n = (k) => quiz.marks.filter((m) => m.kind === k).length;
   const good = n('good'), save = n('save'), bad = n('bad');
-  // 헷갈림은 맞힌 것으로 계산
-  $('scoreBig').textContent = `${good + save} / ${total}`;
+  $('totalText').textContent = `총 ${total}문제`;
   $('cntGood').textContent = good;
   $('cntSave').textContent = save;
   $('cntBad').textContent = bad;
