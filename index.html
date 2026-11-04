@@ -7,7 +7,11 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="googlebot" content="noindex, nofollow">
 <meta name="Yeti" content="noindex, nofollow">
-<title>Blooming 단어 테스트</title>
+<title>BLOOMing Camp 단어 테스트</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌼</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,13 +19,14 @@
 <!-- 1. 시작 화면 -->
 <section id="home" class="screen">
   <header class="hero">
-    <div class="logo">🌸</div>
-    <h1>Blooming 단어 테스트</h1>
-    <p>범위를 고르고 바로 테스트하거나 시험지를 만들어 보세요.</p>
+    <div class="logo">🌼</div>
+    <h1><span class="bloom">BLOOM</span>ing Camp</h1>
+    <p class="sub-title">단어 테스트</p>
+    <p class="desc">범위를 고르고 카드 테스트를 하거나 시험지를 만들어 보세요.</p>
   </header>
 
   <div class="card">
-    <h2>1. 범위 선택</h2>
+    <h2><span class="step">01</span> 범위 선택</h2>
     <div class="row">
       <label>시작 <select id="dayFrom"></select></label>
       <span class="tilde">~</span>
@@ -29,7 +34,7 @@
     </div>
     <p class="hint">선택된 단어: <b id="poolCount">0</b>개</p>
 
-    <h2>2. 문제 개수</h2>
+    <h2><span class="step">02</span> 문제 개수</h2>
     <div class="row">
       <input id="count" type="number" min="1" value="20" inputmode="numeric">
       <span>개</span>
@@ -38,45 +43,58 @@
       <button class="chip" data-n="100">100</button>
       <button class="chip" id="allBtn">전체</button>
     </div>
-    <p class="hint" id="countWarn"></p>
+    <p class="hint warn" id="countWarn"></p>
   </div>
 
   <div class="actions">
-    <button id="startTest" class="btn primary">✏️ 바로 테스트</button>
+    <button id="startTest" class="btn primary">🃏 카드 테스트</button>
     <button id="makeSheet" class="btn secondary">🖨️ 시험지 만들기</button>
   </div>
 </section>
 
-<!-- 2. 바로 테스트 -->
+<!-- 2. 카드 테스트 -->
 <section id="quiz" class="screen hidden">
   <div class="quiz-top">
     <button class="link" id="quitQuiz">← 그만하기</button>
     <span id="progressText"></span>
   </div>
   <div class="bar"><div id="progressBar"></div></div>
-  <div class="card question">
+
+  <div id="flashcard" class="flashcard" tabindex="0">
     <div id="qWord" class="word"></div>
-    <div id="options" class="options"></div>
-    <button id="nextBtn" class="btn primary hidden">다음 →</button>
+    <div id="qMeaning" class="meaning hidden"></div>
+    <div id="tapHint" class="tap-hint">뜻을 떠올린 뒤 눌러서 확인하세요</div>
   </div>
+
+  <button id="revealBtn" class="btn primary wide">정답 보기</button>
+  <div id="markBtns" class="mark-btns hidden">
+    <button class="btn mark good" data-mark="good">⭕ 맞았어요</button>
+    <button class="btn mark save" data-mark="save">⭐ 헷갈려요</button>
+    <button class="btn mark bad" data-mark="bad">❌ 틀렸어요</button>
+  </div>
+  <p class="hint center key-hint">키보드: Space 정답 보기 · 1 맞음 · 2 헷갈림 · 3 틀림</p>
 </section>
 
 <!-- 3. 결과 -->
 <section id="result" class="screen hidden">
   <div class="card center">
-    <h2>테스트 결과</h2>
+    <h2>테스트 결과 🌼</h2>
     <div id="scoreBig" class="score"></div>
-    <p id="scoreSub" class="hint"></p>
+    <div class="tally">
+      <span class="t good">⭕ 맞음 <b id="cntGood"></b></span>
+      <span class="t save">⭐ 헷갈림 <b id="cntSave"></b></span>
+      <span class="t bad">❌ 틀림 <b id="cntBad"></b></span>
+    </div>
+    <p id="perfectMsg" class="hint hidden">모두 맞혔어요! 🎉</p>
   </div>
-  <div id="wrongWrap" class="card">
-    <h2>틀린 단어</h2>
-    <table class="wrong-table">
-      <thead><tr><th>단어</th><th>정답</th><th>내가 고른 답</th></tr></thead>
-      <tbody id="wrongList"></tbody>
+  <div id="reviewWrap" class="card">
+    <h2>다시 볼 단어 <span class="muted" id="reviewCount"></span></h2>
+    <table class="review-table">
+      <tbody id="reviewList"></tbody>
     </table>
   </div>
   <div class="actions">
-    <button id="retryWrong" class="btn primary">틀린 단어 다시 풀기</button>
+    <button id="retryReview" class="btn primary">다시 볼 단어만 테스트</button>
     <button id="goHome" class="btn secondary">처음으로</button>
   </div>
 </section>

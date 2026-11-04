@@ -68,112 +68,103 @@ document.querySelectorAll('.chip[data-n]').forEach((b) =>
 );
 $('allBtn').addEventListener('click', () => { $('count').value = pool().length; updateCount(); });
 
-/* ---------- 바로 테스트 (객관식) ---------- */
+/* ---------- 카드 테스트 ---------- */
+// 단어를 보고 뜻을 떠올린 뒤, 정답을 확인하고 스스로 맞음 / 헷갈림 / 틀림을 고른다
 let quiz = null;
 
-function makeQuestion(word, distractorPool) {
-  const answer = word[2];
-  const others = shuffle(distractorPool.filter((w) => w[2] !== answer && w[1] !== word[1]));
-  const choices = [];
-  for (const w of others) {
-    if (!choices.includes(w[2])) choices.push(w[2]);
-    if (choices.length === 3) break;
-  }
-  return { word, options: shuffle([answer, ...choices]) };
-}
-
 function startQuiz(words) {
-  // 오답 보기는 선택한 범위에서 고르고, 범위가 너무 작으면 전체 단어에서 고른다
-  const p = pool();
-  const distractors = p.length >= 8 ? p : WORDS;
-  quiz = {
-    questions: words.map((w) => makeQuestion(w, distractors)),
-    i: 0,
-    wrong: [],
-    answered: false,
-  };
+  quiz = { words, i: 0, marks: [], revealed: false };
   show('quiz');
-  renderQuestion();
+  renderCard();
 }
 
-function renderQuestion() {
-  const q = quiz.questions[quiz.i];
-  const total = quiz.questions.length;
-  quiz.answered = false;
+function renderCard() {
+  const total = quiz.words.length;
+  const w = quiz.words[quiz.i];
+  quiz.revealed = false;
   $('progressText').textContent = `${quiz.i + 1} / ${total}`;
   $('progressBar').style.width = (quiz.i / total) * 100 + '%';
-  $('qWord').textContent = q.word[1];
-  $('options').innerHTML = '';
-  q.options.forEach((opt, k) => {
-    const b = document.createElement('button');
-    b.className = 'opt';
-    b.innerHTML = `<span class="num">${k + 1}</span>`;
-    b.append(opt);
-    b.addEventListener('click', () => choose(k));
-    $('options').append(b);
-  });
-  $('nextBtn').classList.add('hidden');
+  $('qWord').textContent = w[1];
+  $('qMeaning').textContent = w[2];
+  $('qMeaning').classList.add('hidden');
+  $('tapHint').classList.remove('hidden');
+  $('flashcard').classList.remove('revealed');
+  $('revealBtn').classList.remove('hidden');
+  $('markBtns').classList.add('hidden');
 }
 
-function choose(k) {
-  if (quiz.answered) return;
-  quiz.answered = true;
-  const q = quiz.questions[quiz.i];
-  const btns = [...$('options').children];
-  const correctIdx = q.options.indexOf(q.word[2]);
-  btns.forEach((b) => (b.disabled = true));
-  btns[correctIdx].classList.add('correct');
-  if (k !== correctIdx) {
-    btns[k].classList.add('wrong');
-    quiz.wrong.push({ word: q.word, picked: q.options[k] });
-  }
-  const last = quiz.i === quiz.questions.length - 1;
-  $('nextBtn').textContent = last ? '결과 보기' : '다음 →';
-  $('nextBtn').classList.remove('hidden');
-  $('nextBtn').focus();
+function reveal() {
+  if (quiz.revealed) return;
+  quiz.revealed = true;
+  $('qMeaning').classList.remove('hidden');
+  $('tapHint').classList.add('hidden');
+  $('flashcard').classList.add('revealed');
+  $('revealBtn').classList.add('hidden');
+  $('markBtns').classList.remove('hidden');
 }
 
-function next() {
-  if (!quiz.answered) return;
+function mark(kind) {
+  if (!quiz.revealed) return;
+  quiz.marks.push({ word: quiz.words[quiz.i], kind });
   quiz.i++;
-  if (quiz.i >= quiz.questions.length) showResult();
-  else renderQuestion();
+  if (quiz.i >= quiz.words.length) showResult();
+  else renderCard();
 }
-$('nextBtn').addEventListener('click', next);
+
+$('flashcard').addEventListener('click', reveal);
+$('revealBtn').addEventListener('click', reveal);
+document.querySelectorAll('.mark').forEach((b) =>
+  b.addEventListener('click', () => mark(b.dataset.mark))
+);
 
 document.addEventListener('keydown', (e) => {
   if ($('quiz').classList.contains('hidden')) return;
-  if (['1', '2', '3', '4'].includes(e.key)) choose(+e.key - 1);
-  else if (e.key === 'Enter' && quiz.answered) { e.preventDefault(); next(); }
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); reveal(); }
+  else if (e.key === '1') mark('good');
+  else if (e.key === '2') mark('save');
+  else if (e.key === '3') mark('bad');
 });
 
 $('quitQuiz').addEventListener('click', () => {
-  if (confirm('테스트를 그만할까요?')) show('home');
+  if (!quiz.marks.length) { show('home'); return; }
+  if (confirm('테스트를 그만하고 지금까지 결과를 볼까요?')) showResult();
 });
 
+const TAG = { bad: '❌', save: '⭐' };
+
 function showResult() {
-  const total = quiz.questions.length;
-  const right = total - quiz.wrong.length;
-  $('scoreBig').textContent = `${right} / ${total}`;
-  $('scoreSub').textContent =
-    `정답률 ${Math.round((right / total) * 100)}%` + (quiz.wrong.length ? '' : ' · 모두 맞혔어요! 🎉');
-  $('wrongWrap').classList.toggle('hidden', quiz.wrong.length === 0);
-  $('retryWrong').classList.toggle('hidden', quiz.wrong.length === 0);
-  $('wrongList').innerHTML = '';
-  for (const w of quiz.wrong) {
+  const total = quiz.marks.length;
+  const n = (k) => quiz.marks.filter((m) => m.kind === k).length;
+  const good = n('good'), save = n('save'), bad = n('bad');
+  // 헷갈림은 맞힌 것으로 계산
+  $('scoreBig').textContent = `${good + save} / ${total}`;
+  $('cntGood').textContent = good;
+  $('cntSave').textContent = save;
+  $('cntBad').textContent = bad;
+  $('perfectMsg').classList.toggle('hidden', save + bad > 0);
+
+  // 틀린 단어 먼저, 그다음 헷갈린 단어
+  const review = [...quiz.marks.filter((m) => m.kind === 'bad'), ...quiz.marks.filter((m) => m.kind === 'save')];
+  quiz.review = review.map((m) => m.word);
+  $('reviewWrap').classList.toggle('hidden', review.length === 0);
+  $('retryReview').classList.toggle('hidden', review.length === 0);
+  $('reviewCount').textContent = `${review.length}개`;
+  $('reviewList').innerHTML = '';
+  for (const m of review) {
     const tr = document.createElement('tr');
-    for (const t of [w.word[1], w.word[2], w.picked]) {
+    [[TAG[m.kind], 'tag'], [m.word[1], 'en'], [m.word[2], 'ko']].forEach(([t, cls]) => {
       const td = document.createElement('td');
+      td.className = cls;
       td.textContent = t;
       tr.append(td);
-    }
-    $('wrongList').append(tr);
+    });
+    $('reviewList').append(tr);
   }
   show('result');
 }
 
 $('startTest').addEventListener('click', () => startQuiz(shuffle(pool()).slice(0, wantedCount())));
-$('retryWrong').addEventListener('click', () => startQuiz(shuffle(quiz.wrong.map((w) => w.word))));
+$('retryReview').addEventListener('click', () => startQuiz(shuffle(quiz.review)));
 $('goHome').addEventListener('click', () => show('home'));
 
 /* ---------- 시험지 만들기 ---------- */
@@ -193,15 +184,15 @@ function chunk(arr, n) {
 function pageHead(kind, total, pageNo, pageCount) {
   const info = kind === 'test'
     ? `<span>이름 <span class="blank"></span></span><span>점수 <span class="blank"></span> / ${total}</span>`
-    : `<span>${esc(rangeText())} · ${total}문항</span>`;
+    : `<span class="range">${esc(rangeText())} · ${total}문항</span>`;
   return `
     <div class="page-head">
       <div class="title-row">
-        <h3>Blooming VOCA Test</h3>
+        <h3><span class="bloom">BLOOM</span>ing Camp VOCA Test</h3>
         <span class="tag">${kind === 'test' ? '시험지' : '답안지'}</span>
       </div>
       <div class="info-row">
-        ${kind === 'test' ? `<span>${esc(rangeText())} · ${total}문항</span>` : ''}
+        ${kind === 'test' ? `<span class="range">${esc(rangeText())} · ${total}문항</span>` : ''}
         ${info}
       </div>
     </div>`;
