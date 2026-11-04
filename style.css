@@ -1,0 +1,177 @@
+:root {
+  --pink: #e05a8a;
+  --pink-dark: #c2416f;
+  --pink-light: #fdeef4;
+  --text: #222;
+  --muted: #777;
+  --line: #e6e6e6;
+  --good: #2e9e5b;
+  --bad: #d64545;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  background: #faf7f8;
+  color: var(--text);
+}
+.hidden { display: none !important; }
+.screen { max-width: 640px; margin: 0 auto; padding: 16px; }
+
+.hero { text-align: center; padding: 24px 0 8px; }
+.logo { font-size: 44px; }
+.hero h1 { margin: 6px 0; font-size: 26px; }
+.hero p { margin: 0; color: var(--muted); }
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+.card h2 { font-size: 17px; margin: 0 0 12px; }
+.card h2:not(:first-child) { margin-top: 22px; }
+.center { text-align: center; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tilde { font-size: 18px; color: var(--muted); }
+.hint { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
+.hint b { color: var(--pink-dark); }
+#countWarn { color: var(--bad); }
+
+select, input[type=number] {
+  font-size: 16px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+}
+label { display: flex; align-items: center; gap: 6px; }
+input[type=number] { width: 90px; }
+
+button { font-family: inherit; cursor: pointer; }
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.btn.small { padding: 8px 12px; font-size: 14px; }
+.btn.primary { background: var(--pink); color: #fff; }
+.btn.primary:hover { background: var(--pink-dark); }
+.btn.secondary { background: #fff; color: var(--pink-dark); border: 2px solid var(--pink); }
+.btn:disabled { opacity: .4; cursor: default; }
+.chip {
+  border: 1px solid #ddd; background: #fff; border-radius: 20px;
+  padding: 6px 12px; font-size: 14px;
+}
+.chip:hover { border-color: var(--pink); color: var(--pink-dark); }
+.link { background: none; border: none; color: var(--muted); font-size: 15px; padding: 4px 0; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* 테스트 */
+.quiz-top { display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
+.bar { height: 6px; background: var(--line); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+#progressBar { height: 100%; width: 0; background: var(--pink); transition: width .2s; }
+.question { text-align: center; }
+.word { font-size: 32px; font-weight: 700; margin: 18px 0 26px; word-break: break-word; }
+.options { display: grid; gap: 10px; }
+.opt {
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.45;
+  padding: 14px 16px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  white-space: pre-line;
+}
+.opt .num { color: var(--muted); margin-right: 8px; font-weight: 600; }
+.opt:hover:not(:disabled) { border-color: var(--pink); background: var(--pink-light); }
+.opt:disabled { cursor: default; color: var(--text); }
+.opt.correct { border-color: var(--good); background: #e8f6ee; }
+.opt.wrong { border-color: var(--bad); background: #fbeaea; }
+#nextBtn { width: 100%; margin-top: 18px; }
+
+/* 결과 */
+.score { font-size: 48px; font-weight: 800; color: var(--pink-dark); margin: 8px 0; }
+.wrong-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.wrong-table th, .wrong-table td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; white-space: pre-line; }
+.wrong-table th { color: var(--muted); font-weight: 600; }
+.wrong-table td:first-child { font-weight: 700; }
+.wrong-table td:last-child { color: var(--bad); }
+
+/* 시험지 (화면 미리보기) */
+#sheet { background: #e9e6e7; min-height: 100vh; padding-bottom: 40px; }
+.toolbar {
+  position: sticky; top: 0; z-index: 5;
+  background: #fff; padding: 10px 16px;
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.toolbar-right { display: flex; gap: 8px; }
+.toolbar-hint { width: 100%; margin: 0; font-size: 13px; color: var(--muted); }
+#pages { padding: 16px; overflow-x: auto; }
+
+.page {
+  width: 210mm;
+  height: 297mm;
+  padding: 14mm 14mm 12mm;
+  margin: 0 auto 16px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: #000;
+}
+.page-head {
+  border-bottom: 2px solid #000;
+  padding-bottom: 6px;
+  margin-bottom: 4mm;
+}
+.page-head .title-row { display: flex; justify-content: space-between; align-items: baseline; }
+.page-head h3 { margin: 0; font-size: 17pt; }
+.page-head .tag { font-size: 10pt; border: 1px solid #000; padding: 1px 8px; border-radius: 4px; }
+.page-head .info-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10.5pt; }
+.page-head .blank { display: inline-block; min-width: 32mm; border-bottom: 1px solid #000; }
+.page-cols { flex: 1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 8mm; }
+.col { display: flex; flex-direction: column; }
+.item {
+  display: flex; align-items: flex-end; gap: 2mm;
+  font-size: 10.5pt;
+  height: 9.2mm;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 1mm;
+}
+.item .n { width: 8mm; text-align: right; color: #555; flex: none; }
+.item .en { font-weight: 600; width: 40mm; flex: none; overflow-wrap: anywhere; }
+.ans-item {
+  display: flex; gap: 2mm;
+  font-size: 8.8pt;
+  line-height: 1.3;
+  padding: 1.2mm 0;
+  border-bottom: 1px solid #ddd;
+  min-height: 0;
+}
+.ans-item .n { width: 7mm; text-align: right; color: #555; flex: none; }
+.ans-item .en { font-weight: 700; width: 30mm; flex: none; overflow-wrap: anywhere; }
+.ans-item .ko { flex: 1; white-space: pre-line; }
+.page-foot { text-align: center; font-size: 9pt; color: #555; margin-top: 3mm; }
+
+@page { size: A4; margin: 0; }
+@media print {
+  body { background: #fff; }
+  body > section:not(#sheet) { display: none !important; }
+  #sheet { background: #fff; padding: 0; }
+  .toolbar { display: none; }
+  #pages { padding: 0; }
+  .page { margin: 0; box-shadow: none; break-after: page; }
+  .page:last-child { break-after: auto; }
+}
+
+@media (max-width: 480px) {
+  .actions { grid-template-columns: 1fr; }
+  .word { font-size: 26px; }
+}
