@@ -195,7 +195,7 @@ function pageHead(kind, total) {
   return `
     <div class="page-head">
       <div class="title-row">
-        <h3>셀프 체크 <span class="range">${esc(rangeText())}</span></h3>
+        <h3>Self-Check <span class="range">${esc(rangeText())}</span></h3>
         <span class="tag">${kind === 'test' ? '시험지' : '답안지'}</span>
       </div>
       <div class="info-row">
