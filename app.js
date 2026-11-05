@@ -31,14 +31,37 @@ function range() {
   if (a > b) [a, b] = [b, a];
   return [a, b];
 }
+// 숙어: 각 Day 맨 앞에 모여 있는 두 단어 이상의 표현 (구동사 포함)
+// Day 중간의 side effect 같은 명사는 앞쪽 묶음이 아니라서 빠진다
+const IDIOMS = new Set();
+(function markIdioms() {
+  let day = null, front = false;
+  for (const w of WORDS) {
+    if (w[0] !== day) { day = w[0]; front = true; }
+    if (front && /\s/.test(w[1].replace(/ⓝ|ⓥ/g, '').trim())) IDIOMS.add(w);
+    else front = false;
+  }
+})();
+let wordType = 'all'; // 'all' 전체 / 'idiom' 숙어만
+
 function pool() {
   const [a, b] = range();
-  return WORDS.filter((w) => w[0] >= a && w[0] <= b);
+  return WORDS.filter((w) => w[0] >= a && w[0] <= b && (wordType === 'all' || IDIOMS.has(w)));
 }
 function rangeText() {
   const [a, b] = range();
-  return a === b ? dayLabel(a) : `${dayLabel(a)} ~ ${dayLabel(b)}`;
+  const days = a === b ? dayLabel(a) : `${dayLabel(a)} ~ ${dayLabel(b)}`;
+  return wordType === 'idiom' ? `${days} · 숙어` : days;
 }
+function setWordType(t) {
+  wordType = t;
+  document.querySelectorAll('#typeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.type === t));
+  updateCount();
+}
+$('typeSeg').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (b) setWordType(b.dataset.type);
+});
 
 function updateCount() {
   const n = pool().length;
@@ -275,7 +298,7 @@ function sheetUrl() {
   const [a, b] = range();
   const u = new URL(location.href);
   u.hash = '';
-  u.search = `?sheet=1&from=${a}&to=${b}&n=${wantedCount()}`;
+  u.search = `?sheet=1&from=${a}&to=${b}&n=${wantedCount()}&type=${wordType}`;
   return u.toString();
 }
 
@@ -307,6 +330,7 @@ updateCount();
   if (DAYS.includes(a)) $('dayFrom').value = a;
   if (DAYS.includes(b)) $('dayTo').value = b;
   if (n > 0) $('count').value = n;
+  if (q.get('type') === 'idiom') setWordType('idiom');
   updateCount();
   makeSheet();
   history.replaceState(null, '', location.pathname);
