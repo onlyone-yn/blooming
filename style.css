@@ -265,4 +265,4 @@ button { font-family: inherit; cursor: pointer; }
 }
 .seg button + button { border-left: 2px solid var(--point); }
 .seg button.on { background: var(--accent); color: #fff; }
-.type-hint { margin-top: 6px; font-size: 13px; }
+.type-hint { margin-top: 8px; margin-bottom: 22px; font-size: 13px; line-height: 1.6; }
